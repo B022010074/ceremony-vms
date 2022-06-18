@@ -74,7 +74,7 @@ app.get('/', (req, res) => {
  *     requestBody:
  *       required: true
  *       content:
- *         application/text:
+ *         application/json:
  *           schema: 
  *             type: object
  *             properties:
@@ -117,7 +117,8 @@ app.post('/login', async (req, res) => {
 		role: user.role,
 		token: generateAccessToken({ 
 			_id: user._id,
-			username: user.username
+			username: user.username,
+			role: user.role
 			})
 	});
 })
@@ -141,6 +142,7 @@ app.post('/login/staff', async (req, res) => {
 		_id: staff._id,
 		staffusername: staff.staffusername,
 		position: staff.position,
+		role: staff.role,
 		staffphonenumber: staff.staffphonenumber,
 		token: generateAccessToken({ 
 			_id: staff._id,
@@ -153,7 +155,7 @@ app.post('/login/staff', async (req, res) => {
 // user or admin register staff
 app.post('/register/staff', async (req, res) => {
 	console.log(req.body);
-	const srg = await User.s_register(req.body.staffusername, req.body.staffpassword,req.body.position,req.body.staffphonenumber);
+	const srg = await User.s_register(req.body.staffusername, req.body.staffpassword,req.body.position,req.body.role,req.body.staffphonenumber);
 	if (srg == "staffusername already existed"||srg == "phone number already existed"){
 		return res.status(404).send("staff duplicate!")		
 	}
@@ -162,19 +164,27 @@ app.post('/register/staff', async (req, res) => {
 })
 
 // user or admin register
-app.post('/register', async (req, res) => {
-	console.log(req.body);
-	const user = await User.register(req.body.username, req.body.password,req.body.name,req.body.role,req.body.matric_id,req.body.phonenumber);
-	if (user == "username already existed"||user == "phone number already existed"){
-		return res.status(404).send("user duplicate!")		
+app.post('/register', verifyToken, async (req, res) => {
+	console.log(req.user);
+	if(req.user.role == "admin"){
+		console.log(req.body);
+		const user = await User.register(req.body.username, req.body.password,req.body.name,req.body.role,req.body.matric_id,req.body.phonenumber);
+		if (user == "username already existed"||user == "staff phone number already existed"){
+			return res.status(404).send("user duplicate!")		
+		}
+
+		return res.status(200).send("user successfully saved.")
+	}
+	else{
+		res.status(404).send("Unauthorized")
 	}
 
-	return res.status(200).send("user successfully saved.")
 })
 
 
 // visitor find name
-app.get('/find/visitor/:name', async(req,res)=>{
+app.get('/find/visitor/:name', verifyToken, async(req,res)=>{
+	if(req.user.role == "admin" || req.user.role == "visitor" ){
 	const anyth= await Visitor.viewvisitor(req.params.name)
 	if(anyth=="Username cannot be found")
 	{
@@ -186,6 +196,10 @@ app.get('/find/visitor/:name', async(req,res)=>{
 		name: anyth.name,
 		role: anyth.role,
 	})
+	}
+	else{
+		res.status(404).send("Unauthorized")
+		}
   })
 
 // Middleware Express for JWT
@@ -214,7 +228,8 @@ app.get('/find/visitor/:name', async(req,res)=>{
 
 
   // user or admin update
-  app.patch('/update/user',async (req,res) =>{
+  app.patch('/update/user', verifyToken,async (req,res) =>{
+	if(req.user.role == "admin"){
 	console.log(req.body);
 
 	let user = await User.update(req.body.username, req.body.password, req.body.name);
@@ -233,12 +248,17 @@ app.get('/find/visitor/:name', async(req,res)=>{
 	//	name: user.username,
 	//	phonenumber: user.phone,
 	//})
+	}
+	else{
+		res.status(404).send("Unauthorized")
+		}
+
 })
 
 // user or admin delete
-app.delete('/delete/user', async (req, res) => {
+app.delete('/delete/user',verifyToken, async (req, res) => {
 	console.log(req.body);
-	//if(req.user.role == "admin"){
+	if(req.user.role == "admin"){
 	const user = await User.delete(req.body.username,req.body.password);
 	if (user == "invalid password"){
 		return res.status(404).send("Invalid password")		
@@ -246,14 +266,17 @@ app.delete('/delete/user', async (req, res) => {
 	else if(user == "Wrong username"){
 		return res.status(404).send("Invalid username")
 	}
-	//}
-
 	return res.status(200).send("Delete successfully")
+	}
+	else{
+		res.status(404).send("Unauthorized")
+	}
 })
-
+	
+// staff delete
 app.delete('/delete/staff', async (req, res) => {
 	console.log(req.body);
-	//if(req.user.role == "admin"){
+
 	const s_delete = await Staff.delete(req.body.staffusername,req.body.staffpassword);
 	if (s_delete == "invalid password"){
 		return res.status(404).send("Invalid password")		
@@ -261,29 +284,17 @@ app.delete('/delete/staff', async (req, res) => {
 	else if(s_delete == "Wrong username"){
 		return res.status(404).send("Invalid username")
 	}
-	//}
-
 	return res.status(200).send("Delete staff successfully")
+	
+
+	
+	
 })
-// staff delete
-// app.delete('/delete/staff', async (req, res) => {
-// 	console.log(req.body);
-// 	//if(req.user.role == "admin"){
-// 	const user = await User.delete(req.body.username,req.body.password);
-// 	if (user == "invalid password"){
-// 		return res.status(404).send("Invalid password")		
-// 	}
-// 	else if(user == "Wrong username"){
-// 		return res.status(404).send("Invalid username")
-// 	}
-// 	//}
-
-// 	return res.status(200).send("Delete successfully")
-// })
 
 
 
-app.use(verifyToken);
+
+//app.use(verifyToken);
 
 app.listen(port, () => {
 	console.log(`Example app listening on port ${port}`)
@@ -292,7 +303,7 @@ app.listen(port, () => {
 const jwt = require('jsonwebtoken');
 
 function generateAccessToken(payload) {
-	return jwt.sign(payload, "my-super-secret", { expiresIn: '60s' });
+	return jwt.sign(payload, "my-super-secret", { expiresIn: '1h' });
 }
 
 function verifyToken(req, res, next) {

@@ -4,19 +4,19 @@ const request = supertest('http://localhost:3000');
 describe('Express Route Test', function () {
 	
 	let adminaccessToken;
-	let staffaccessToken;
+	// let staffaccessToken;
 	
 
 	beforeAll(async () => {
 		const response1 = await request
 			.post('/login')
-			.send({username: "abu1", password: "6789" })
+			.send({username: "crit", password: "4567" })
 		adminaccessToken=response1.body.token;
 
-		const response2 = await request
-			.post('/login/staff')
-			.send({username: "cools", password: "5678" })
-		staffaccessToken=response2.body.token;
+		// const response2 = await request
+		// 	.post('/login/staff')
+		// 	.send({staffusername: "ali", staffpassword: "6789" })
+		// staffaccessToken=response2.body.token;
 
 		
 	});
@@ -32,17 +32,22 @@ describe('Express Route Test', function () {
 	 it('register', async () => {
         return request
 			.post('/register')
+			.set('Authorization', `Bearer ${adminaccessToken}`)
 			.send({'username': 'abu1', 'password': "6789",'name':'samad','role': 'staff','matric_id':'070','phonenumber':'012345674' })
 			.expect('Content-Type', /text/)
 			.expect(200).then(response => {
 				expect(response.text).toEqual("user successfully saved.");
 			});
+			// .expect(401).then(response => {
+			// 	expect(response.text).toEqual("Unauthorized");
+			// });
 	});
 
 	it('register staff', async () => {
         return request
 			.post('/register/staff')
-			.send({'staffusername': 'arif', 'staffpassword': '1234' , 'position': 'gate C', 'staffphonenumber': '01223578' })
+			// .set('Authorization', `Bearer ${staffaccessToken}`)
+			.send({'staffusername': 'arif', 'staffpassword': '1234' , 'position': 'gate C','role': 'staff' ,'staffphonenumber': '01223578' })
 			.expect('Content-Type', /text/)
 			.expect(200).then(response => {
 				expect(response.text).toEqual("staff successfully saved.");
@@ -52,34 +57,34 @@ describe('Express Route Test', function () {
 	it('register staff fail', async () => {
         return request
 			.post('/register/staff')
-			.send({'staffusername': 'arif', 'staffpassword': '1234' , 'position': 'gate C', 'staffphonenumber': '01223578' })
+			// .set('Authorization', `Bearer ${staffaccessToken}`)
+			.send({'staffusername': 'arif', 'staffpassword': '1234' , 'position': 'gate C', 'role' : 'staff','staffphonenumber': '01223578' })
 			.expect('Content-Type', /text/)
 			.expect(404).then(response => {
 				expect(response.text).toEqual("staff duplicate!");
 			});
 	});
 	
-	// it('register staff fail', async () => {
-    //     return request
-	// 		.post('/register/staff')
-	// 		.send({'staffusername': 'arif', 'staffpassword': '1234' , 'position': 'gate C', 'staffphonenumber': '01223578' })
-	// 		.expect('Content-Type', /text/)
-	// 		.expect(200).then(response => {
-	// 			expect(response.text).toEqual("staff phone number already existed");
-	// 		});
-	// });
+	it('register staff fail', async () => {
+        return request
+			.post('/register/staff')
+			.send({'staffusername': 'arif', 'staffpassword': '1234' , 'position': 'gate C', 'staffphonenumber': '01223578' })
+			.expect('Content-Type', /text/)
+			.expect(404).then(response => {
+				expect(response.text).toEqual("staff duplicate!");
+			});
+	});
 
 	it('register failed', async () => {
 		return request
 			.post('/register')
+			.set('Authorization', `Bearer ${adminaccessToken}`)
 			.send({'username': 'abu1', 'password': "4567",'name':'alif','role': 'admin','matric_id':'050','phonenumber':'012345678' })
 			.expect('Content-Type', /text/)
 			.expect(404).then(response => {
 				expect(response.text).toEqual("user duplicate!");
 			});
 	})
-	
-
 	
 
 	it('login failed', async () => {
@@ -136,6 +141,7 @@ describe('Express Route Test', function () {
 					_id:expect.any(String) ,
 					staffusername: expect.any(String),
 					position: expect.any(String),
+					role: expect.any(String),
 					staffphonenumber: expect.any(String)
 				})
 			});
@@ -143,6 +149,7 @@ describe('Express Route Test', function () {
 	
 	it('view visitor', async()=>{
 		return request.get('/find/visitor/alif')
+		.set('Authorization', `Bearer ${adminaccessToken}`)
 		.expect('Content-Type', /json/)
 		.expect(200).then(response=>{
 			expect(response.body).toMatchObject({
@@ -190,6 +197,7 @@ describe('Express Route Test', function () {
 	it('update failed, wrong password', async () => {
 		return request
 			.patch('/update/user')
+			.set('Authorization', `Bearer ${adminaccessToken}`)
 			.send({'username': 'abu1', 'password': '6783','name': 'samad' })
 			.expect('Content-Type', /text/)
 			.expect(404).then(response => {
@@ -202,6 +210,7 @@ describe('Express Route Test', function () {
 	it('update failed, wrong username', async () => {
 		return request
 			.patch('/update/user')
+			.set('Authorization', `Bearer ${adminaccessToken}`)
 			.send({'username': 'abu2', 'password': '6789','name': 'samad' })
 			.expect('Content-Type', /text/)
 			.expect(404).then(response => {
@@ -212,6 +221,7 @@ describe('Express Route Test', function () {
 	it('update successfully', async () => {
 		return request
 			.patch('/update/user')
+			.set('Authorization', `Bearer ${adminaccessToken}`)
 			.send({'username': 'abu1', 'password': '6789','name': 'samad' })
 			.expect('Content-Type', /text/)
 			.expect(200).then(response => {
@@ -220,7 +230,7 @@ describe('Express Route Test', function () {
 	})
 	
 	//update visitor
-	it('update successfully', async () => {
+	it('update visitor successfully', async () => {
 		return request
 			.patch('/update/visitor')
 			.send({'username': 'crit', 'password': '4567','phonenumber': '017892345' })
@@ -233,6 +243,7 @@ describe('Express Route Test', function () {
 	it('delete failed, wrong username', async () => {
 		return request
 			.delete('/delete/user')
+			.set('Authorization', `Bearer ${adminaccessToken}`)
 			.send({'username': 'abu2', 'password': '6789'})
 			.expect('Content-Type', /text/)
 			.expect(404).then(response => {
@@ -243,6 +254,7 @@ describe('Express Route Test', function () {
 	it('delete failed, wrong password', async () => {
 		return request
 			.delete('/delete/user')
+			.set('Authorization', `Bearer ${adminaccessToken}`)
 			.send({'username': 'abu1', 'password': '6783'})
 			.expect('Content-Type', /text/)
 			.expect(404).then(response => {
@@ -267,6 +279,7 @@ describe('Express Route Test', function () {
 	it('delete successfully', async () => {
 		return request
 			.delete('/delete/user')
+			.set('Authorization', `Bearer ${adminaccessToken}`)
 			.send({'username': 'abu1', 'password': '6789'})
 			.expect('Content-Type', /text/)
 			.expect(200).then(response => {

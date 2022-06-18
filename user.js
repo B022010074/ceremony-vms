@@ -66,7 +66,7 @@ class User {
 				//check phone number exist
 				else if (srg.staffphonenumber==staffphonenumber)
 				{
-				return "phone number already existed"
+				return "staff phone number already existed"
 				}
 			   }
 			   else

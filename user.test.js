@@ -71,10 +71,10 @@ describe("User Account Management", () => {
 		expect(res).toBe("invalid password")
 	})
     
-	test("User delete successfully", async () => {
-		const res = await User.delete("kassim", "4567")
-		expect(res).toBe("delete successfully")
-	})
+	// test("User delete successfully", async () => {
+	// 	const res = await User.delete("kassim", "4567")
+	// 	expect(res).toBe("delete successfully")
+	// })
 	
 	
 });
