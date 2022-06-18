@@ -1,8 +1,10 @@
 let users;
+let staff;
 
 class User {
 	static async injectDB(conn) {
-		users = await conn.db("arifdatabase").collection("staff")
+		users = await conn.db("arifdatabase").collection("admin")
+	staff = await conn.db("arifdatabase").collection("staff")
 	}
 
 	/**
@@ -12,10 +14,11 @@ class User {
 	 * @param {*} username 
 	 * @param {*} password 
 	 * @param {*} name
-	 * @param {*} staff_id
+	 * @param {*} role
+	 * @param {*} matric_id
 	 * @param {*} phonenumber 
 	 */
-	static async register(username, password, name, staff_id, phonenumber) {
+	static async register(username, password, name, role,matric_id, phonenumber) {
 		// TODO: Check if username exists
 		return users.findOne({
 
@@ -26,10 +29,10 @@ class User {
 			{
 			return "username already existed"
 			}
-			//check staff number exist
-			else if (user.staff_id==staff_id)
+			//check matric number exist
+			else if (user.matric_id==matric_id)
 			{
-			return "staff id already existed"
+			return "matric id already existed"
 			}
 		   }
 		   else
@@ -39,86 +42,118 @@ class User {
 			   'username' : username,
 			   'password' : password,
 			   'name': name,
-			   'staff id': staff_id,
+			   'role': role,
+			   'matric id': matric_id,
 			   'phone number': phonenumber,
 			   
 			   })
-			  return "new staff registered"
+			  return "new data registered"
 			 }
 			  }) 	
 		   }
-		   
-	static async login(username, password) {
-		// TODO: Check if username exists
-		return users.findOne({        
-		 
-			'username': username   
-			}).then(async user =>{
-	   
-		// TODO: Validate password
-			if (user) {
-		   
-				if(user.password!=password){
-					return "invalid password"
-				   }
-				else{
-				  
-				   return "login successful"
-				   }
-				}
-			else
-				{
-				return "No such document"
-				}
-			})
-	}
-	
-	static async update(username, password, name) {
-		// TODO: Check if username exists
-		return users.findOne({        
-		 
-			'username': username   
-			}).then(async user =>{
-	   
 		
-			if (user) {
-				if(user.password==password){
-					await users.updateOne({username: username}, {"$set": { name: name}})
-					return "Update successfully"
+		   static async s_register(staffusername, staffpassword, role, staffphonenumber) {
+			// TODO: Check if username exists
+			return staff.findOne({
+	
+				'staffusername': staffusername, 
+				}).then(async srg =>{
+			   if (srg) {
+				if ( srg.staffusername == staffusername )
+				{
+				return "staffusername already existed"
 				}
-				else if(user.password!==password){
-					return "Invalid password"
+				//check phone number exist
+				else if (srg.staffphonenumber==staffphonenumber)
+				{
+				return "phone number already existed"
 				}
-				}
-			
-			else{
-				return "Invalid username"
-			}
-			})
-	}
-	static async delete(username, password) {
-		// TODO: Check if username exists
-		return users.findOne({        
-				 
-			'username': username   
-			}).then(async user =>{
-				  
-		// TODO: Validate password
-			if (user) {
+			   }
+			   else
+			   {
+				// TODO: Save user to database
+				await staff.insertOne({      
+				   'staffusername' : staffusername,
+				   'staffpassword' : staffpassword,
+				   'role': role,
+				   'staffphonenumber': staffphonenumber,
 				   
-				if(user.password!=password){
-					return "invalid password"
+				   })
+				  return "new staff registered"
+				 }
+				  }) 	
+			   }	
+		
+			static async login(username, password) {
+			// TODO: Check if username exists
+				const user = await users.findOne({ username: username })
+			// TODO: Validate password
+				if (user) {
+			   
+					if(user.password!=password){
+						return "invalid password"
+					   }
+					else{
+					  
+					   return user;
+					   }
+					}
+				else
+					{
+					return "No such document"
+					}
+				//})
+		}
+	
+	
+		static async update(username, password, name) {
+			// TODO: Check if username exists
+			return users.findOne({        
+			
+				'username': username   
+				}).then(async user =>{
+		
+			
+				if (user) {
+					if(user.password==password){
+						await users.updateOne({username: username}, {"$set": { name: name}})
+						return "Update successfully"
+					}
+					else if(user.password!==password){
+						return "Invalid password"
+					}
+					}
+				
+				else{
+					return "Invalid username"
+				}
+				})
+		}
+		
+		
+		static async delete(username, password) {
+			// TODO: Check if username exists
+			return users.findOne({        
+					
+				'username': username   
+				}).then(async user =>{
+					
+			// TODO: Validate password
+				if (user) {
+					
+					if(user.password!=password){
+						return "invalid password"
+					}
+					else{
+						await users.deleteOne({username:username}) 
+						return "delete successfully"
+					}
 				}
 				else{
-					await users.deleteOne({username:username}) 
-					return "delete successfully"
+					return "Wrong username"
 				}
-			}
-			else{
-				return "Wrong username"
-			}
-			})
-	}
+				})
+		}
 
 	
 }

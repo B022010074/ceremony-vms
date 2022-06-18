@@ -1,4 +1,5 @@
 const MongoClient = require("mongodb").MongoClient;
+const ObjectId = require("mongodb").ObjectId;
 const User = require("./user")
 
 describe("User Account Management", () => {
@@ -16,12 +17,12 @@ describe("User Account Management", () => {
 	})
 
 	test("New user registration", async () => {
-		const res = await User.register("kassim", "4567","fitri","080","012345968")
-		expect(res).toBe("new staff registered")
+		const res = await User.register("kassim", "4567","fitri","staff","080","012345968")
+		expect(res).toBe("new data registered")
 	})
 
 	test("Duplicate username", async () => {
-		const res = await User.register("crit", "1234")
+		const res = await User.register("kassim", "1234")
 		expect(res).toBe("username already existed")
 	})
 
@@ -31,27 +32,32 @@ describe("User Account Management", () => {
 	})
 
 	test("User login invalid password", async () => {
-		const res = await User.login("crit", "4568")
+		const res = await User.login("kassim", "4568")
 		expect(res).toBe("invalid password") 
 	})
 
 	test("User login successfully", async () => {
-		const res = await User.login("crit", "4567")
-		expect(res).toBe("login successful")
+		const res = await User.login("kassim", "4567")
+		expect(res).toMatchObject({
+			_id: expect.any(ObjectId),
+			username: expect.any(String),
+			name: expect.any(String),
+			role: expect.any(String)
+		})
 	})
 
 	test("User update wrong username", async () => {
-		const res = await User.update("zeyro", "6789", "wahab")
+		const res = await User.update("kassing", "6789", "wahab")
 		expect(res).toBe("Invalid username")
 	})
 
     test("User update wrong password", async () => {
-		const res = await User.update("zeyrox", "678", "wahab")
+		const res = await User.update("kassim", "678", "wahab")
 		expect(res).toBe("Invalid password")
 	})
     
 	test("User update successfully", async () => {
-		const res = await User.update("zeyrox", "6789", "wahab")
+		const res = await User.update("kassim", "4567", "wahab")
 		expect(res).toBe("Update successfully")
 	})
     
