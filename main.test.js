@@ -49,14 +49,26 @@ describe('Express Route Test', function () {
 			});
 	});
 
-	//register visitor
-		// it('visitor register', async()=>{
-		// 	return request
-		// 		.post('/register/visitors')
-		// 		.send({name:"Timo Werner",phonenumber:"01119692051",visitid:"10",block:"Satria",time:"5.00PM",date: "20/6/2022",tovisit:"Kai Havertz",Relationship:"Brother",reason:"Family visit",parking:"307B"})
-		// 		.expect(200)
-		// 		});
+	it('register staff fail', async () => {
+        return request
+			.post('/register/staff')
+			.send({'staffusername': 'arif', 'staffpassword': '1234' , 'position': 'gate C', 'staffphonenumber': '01223578' })
+			.expect('Content-Type', /text/)
+			.expect(404).then(response => {
+				expect(response.text).toEqual("staff duplicate!");
+			});
+	});
 	
+	// it('register staff fail', async () => {
+    //     return request
+	// 		.post('/register/staff')
+	// 		.send({'staffusername': 'arif', 'staffpassword': '1234' , 'position': 'gate C', 'staffphonenumber': '01223578' })
+	// 		.expect('Content-Type', /text/)
+	// 		.expect(200).then(response => {
+	// 			expect(response.text).toEqual("staff phone number already existed");
+	// 		});
+	// });
+
 	it('register failed', async () => {
 		return request
 			.post('/register')
@@ -239,15 +251,18 @@ describe('Express Route Test', function () {
 	})
 
 
-	// it('delete staff successfully', async () => {
-	// 	return request
-	// 		.delete('/delete/staff')
-	// 		.send({'username': 'zeyrox', 'password': '3456'})
-	// 		.expect('Content-Type', /text/)
-	// 		.expect(200).then(response => {
-	// 			expect(response.text).toEqual("Delete successfully");
-	// 		});
-	// })
+	it('delete staff successfully', async () => {
+		return request
+			.delete('/delete/staff')
+			.send({'staffusername': 'arif', 'staffpassword': '1234'})
+			.expect('Content-Type', /text/)
+			.expect(200).then(response => {
+				expect(response.text).toEqual("Delete staff successfully");
+			});
+			// .expect(404).then(response => {
+			// 	expect(response.text).toEqual("Invalid username");
+			// });
+	})
 	
 	it('delete successfully', async () => {
 		return request

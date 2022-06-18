@@ -154,7 +154,7 @@ app.post('/login/staff', async (req, res) => {
 app.post('/register/staff', async (req, res) => {
 	console.log(req.body);
 	const srg = await User.s_register(req.body.staffusername, req.body.staffpassword,req.body.position,req.body.staffphonenumber);
-	if (srg == "staffusername already existed"||srg == "staff id already existed"){
+	if (srg == "staffusername already existed"||srg == "phone number already existed"){
 		return res.status(404).send("staff duplicate!")		
 	}
 
@@ -165,7 +165,7 @@ app.post('/register/staff', async (req, res) => {
 app.post('/register', async (req, res) => {
 	console.log(req.body);
 	const user = await User.register(req.body.username, req.body.password,req.body.name,req.body.role,req.body.matric_id,req.body.phonenumber);
-	if (user == "username already existed"||user == "staff id already existed"){
+	if (user == "username already existed"||user == "phone number already existed"){
 		return res.status(404).send("user duplicate!")		
 	}
 
@@ -251,6 +251,20 @@ app.delete('/delete/user', async (req, res) => {
 	return res.status(200).send("Delete successfully")
 })
 
+app.delete('/delete/staff', async (req, res) => {
+	console.log(req.body);
+	//if(req.user.role == "admin"){
+	const s_delete = await Staff.delete(req.body.staffusername,req.body.staffpassword);
+	if (s_delete == "invalid password"){
+		return res.status(404).send("Invalid password")		
+	}
+	else if(s_delete == "Wrong username"){
+		return res.status(404).send("Invalid username")
+	}
+	//}
+
+	return res.status(200).send("Delete staff successfully")
+})
 // staff delete
 // app.delete('/delete/staff', async (req, res) => {
 // 	console.log(req.body);

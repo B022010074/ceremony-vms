@@ -41,29 +41,29 @@ static async login(staffusername,staffpassword){
   
 
 
-	static async delete(username, password) {
+	static async delete(staffusername, staffpassword) {
 		// TODO: Check if username exists
-		return users.findOne({        
+		// return users.findOne({        
 				
-			'username': username   
-			}).then(async user =>{
-				
+		// 	'staffusername': staffusername   
+		// 	}).then(async sd =>{
+		const sd = await staff.findOne({ staffusername: staffusername })		
 		// TODO: Validate password
-			if (user) {
+		if (sd) {
 				
-				if(user.password!=password){
-					return "invalid password"
-				}
-				else{
-					await users.deleteOne({username:username}) 
-					return "delete successfully"
-				}
+			if(sd.staffpassword!=staffpassword){
+				return "invalid password"
 			}
 			else{
-				return "Wrong username"
+				await staff.deleteOne({staffusername:staffusername}) 
+				return "delete successfully"
 			}
-			})
-	}
+		}
+		else{
+			return "Wrong username"
+		}
+		}
+		//)}
 }
 
 module.exports = Staff;
