@@ -42,7 +42,7 @@ describe('Express Route Test', function () {
 	it('register staff', async () => {
         return request
 			.post('/register/staff')
-			.send({'staffusername': 'aiman', 'staffpassword': '0123' , 'role': 'staff', 'staffphonenumber': '01223556' })
+			.send({'staffusername': 'arif', 'staffpassword': '1234' , 'position': 'gate C', 'staffphonenumber': '01223578' })
 			.expect('Content-Type', /text/)
 			.expect(200).then(response => {
 				expect(response.text).toEqual("staff successfully saved.");
@@ -109,7 +109,7 @@ describe('Express Route Test', function () {
 		return request
 			.post('/login/staff')
 			//.set('Authorization', `Bearer ${staffaccessToken}`)
-			.send({'staffusername': "cools", 'staffpassword': "5678" })
+			.send({'staffusername': "aiman", 'staffpassword': "0123" })
 			.expect('Content-Type', /json/)
 			.expect(200).then(response => {
 				// expect(response.body).toEqual(
@@ -123,14 +123,14 @@ describe('Express Route Test', function () {
 				expect(response.body).toMatchObject({
 					_id:expect.any(String) ,
 					staffusername: expect.any(String),
-					role: expect.any(String),
+					position: expect.any(String),
 					staffphonenumber: expect.any(String)
 				})
 			});
 	});
 	
 	it('view visitor', async()=>{
-		return request.get('/find/visitor/arif')
+		return request.get('/find/visitor/alif')
 		.expect('Content-Type', /json/)
 		.expect(200).then(response=>{
 			expect(response.body).toMatchObject({
@@ -239,15 +239,15 @@ describe('Express Route Test', function () {
 	})
 
 
-	it('delete staff successfully', async () => {
-		return request
-			.delete('/delete/staff')
-			.send({'username': 'zeyrox', 'password': '3456'})
-			.expect('Content-Type', /text/)
-			.expect(200).then(response => {
-				expect(response.text).toEqual("Delete successfully");
-			});
-	})
+	// it('delete staff successfully', async () => {
+	// 	return request
+	// 		.delete('/delete/staff')
+	// 		.send({'username': 'zeyrox', 'password': '3456'})
+	// 		.expect('Content-Type', /text/)
+	// 		.expect(200).then(response => {
+	// 			expect(response.text).toEqual("Delete successfully");
+	// 		});
+	// })
 	
 	it('delete successfully', async () => {
 		return request

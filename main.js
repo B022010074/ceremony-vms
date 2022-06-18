@@ -140,7 +140,7 @@ app.post('/login/staff', async (req, res) => {
 	res.status(200).json({
 		_id: staff._id,
 		staffusername: staff.staffusername,
-		role: staff.role,
+		position: staff.position,
 		staffphonenumber: staff.staffphonenumber,
 		token: generateAccessToken({ 
 			_id: staff._id,
@@ -153,7 +153,7 @@ app.post('/login/staff', async (req, res) => {
 // user or admin register staff
 app.post('/register/staff', async (req, res) => {
 	console.log(req.body);
-	const srg = await User.s_register(req.body.staffusername, req.body.staffpassword,req.body.role,req.body.staffphonenumber);
+	const srg = await User.s_register(req.body.staffusername, req.body.staffpassword,req.body.position,req.body.staffphonenumber);
 	if (srg == "staffusername already existed"||srg == "staff id already existed"){
 		return res.status(404).send("staff duplicate!")		
 	}
@@ -252,20 +252,20 @@ app.delete('/delete/user', async (req, res) => {
 })
 
 // staff delete
-app.delete('/delete/staff', async (req, res) => {
-	console.log(req.body);
-	//if(req.user.role == "admin"){
-	const user = await User.delete(req.body.username,req.body.password);
-	if (user == "invalid password"){
-		return res.status(404).send("Invalid password")		
-	}
-	else if(user == "Wrong username"){
-		return res.status(404).send("Invalid username")
-	}
-	//}
+// app.delete('/delete/staff', async (req, res) => {
+// 	console.log(req.body);
+// 	//if(req.user.role == "admin"){
+// 	const user = await User.delete(req.body.username,req.body.password);
+// 	if (user == "invalid password"){
+// 		return res.status(404).send("Invalid password")		
+// 	}
+// 	else if(user == "Wrong username"){
+// 		return res.status(404).send("Invalid username")
+// 	}
+// 	//}
 
-	return res.status(200).send("Delete successfully")
-})
+// 	return res.status(200).send("Delete successfully")
+// })
 
 
 

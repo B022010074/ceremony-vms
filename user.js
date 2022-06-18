@@ -52,7 +52,7 @@ class User {
 			  }) 	
 		   }
 		
-		   static async s_register(staffusername, staffpassword, role, staffphonenumber) {
+		   static async s_register(staffusername, staffpassword, position, staffphonenumber) {
 			// TODO: Check if username exists
 			return staff.findOne({
 	
@@ -75,7 +75,7 @@ class User {
 				await staff.insertOne({      
 				   'staffusername' : staffusername,
 				   'staffpassword' : staffpassword,
-				   'role': role,
+				   'position': position,
 				   'staffphonenumber': staffphonenumber,
 				   
 				   })
