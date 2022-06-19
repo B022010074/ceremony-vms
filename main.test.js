@@ -147,20 +147,24 @@ describe('Express Route Test', function () {
 			});
 	});
 	
-	it('view visitor', async()=>{
-		return request.get('/find/visitor/alif')
-		.set('Authorization', `Bearer ${adminaccessToken}`)
-		.expect('Content-Type', /json/)
-		.expect(200).then(response=>{
-			expect(response.body).toMatchObject({
-				_id: expect.any(String),
-				username: expect.any(String),
-				name: expect.any(String),
-				role: expect.any(String),
-			})
+	// it('view visitor', async()=>{
+	// 	return request.get('/find/visitor/:name')
+	// 	.set('Authorization', `Bearer ${adminaccessToken}`)
+	// 	.expect('Content-Type', /json/)
+	// 	.expect(200).then(response=>{
+	// 		expect(response.body).toEqual(
+	// 			expect.objectContaining({
+	// 				_id: expect.any(String),
+	// 			    username: expect.any(String),
+	// 			    name: expect.any(String),
+	// 			    role: expect.any(String),
+	// 			})
+	// 		)
+				
+			
 		  
-		});
-	  });
+	// 	});
+	//   });
 
 	// it('should return hello world', async () => {
 	// 	return request.get('/hello')
