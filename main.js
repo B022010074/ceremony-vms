@@ -332,23 +332,20 @@ app.post('/register', verifyToken, async (req, res) => {
 
 /**
  * @swagger
- * /find/visitor:
- *   post:
+ * /find/visitor/{name}:
+ *   get:
  *     security:
  *       - bearerAuth: []
- *     description: Find visitor name
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema: 
- *             type: object
- *             properties:
- *               name:
- *             typr: string
+ *     description: View Visitor
+ *     parameters:
+ *       - in: path
+ *         name: name
+ *         required: true
+ *         schema: 
+ *             type: string
  *     responses:
  *       200:
- *         description: visitor exists
+ *         description: Visitor existed
  *         content:
  *           application/json:
  *             schema:
