@@ -161,28 +161,7 @@ describe('Express Route Test', function () {
 		  
 		});
 	  });
-	// it('visitor test', async () => {
-	// 	return request
-	// 		.get('/visitor/username')
-	// 		.set('Authorization', `Bearer ${accessToken}`)
-	// 		.send({username: "ali"})
-	// 		.expect('Content-Type', /json/)
-	// 		.expect(200).then(response => {
-	// 			expect(response.body).toEqual(
-	// 				expect.objectContaining({
-	// 					_id: expect.any(String),
-	// 					username: expect.any(String),
-	// 					phone: expect.any(Number),
-	// 				})
-	// 			);
-	// 		});
-			// .expect('Content-Type', /text/)
-			// .expect(401).then(response => {
-			// 	//expect(response.text).toEqual("Unauthorized");
-			// 	expect(response.text).toEqual('user');
-			// });
-	//})
-	
+
 	// it('should return hello world', async () => {
 	// 	return request.get('/hello')
 	// 		.set('Authorization', `Bearer ${staffaccessToken}`)
@@ -200,7 +179,7 @@ describe('Express Route Test', function () {
 			.set('Authorization', `Bearer ${adminaccessToken}`)
 			.send({'username': 'abu1', 'password': '6783','name': 'samad' })
 			.expect('Content-Type', /text/)
-			.expect(404).then(response => {
+			.expect(401).then(response => {
 				expect(response.text).toEqual("Invalid password");
 			});
 	})
@@ -226,6 +205,28 @@ describe('Express Route Test', function () {
 			.expect('Content-Type', /text/)
 			.expect(200).then(response => {
 				expect(response.text).toEqual("Update successfully");
+			});
+	})
+	
+	
+	it('update visitor, wrong password', async () => {
+		return request
+			.patch('/update/visitor')
+			.send({'username': 'crit', 'password': '6783','name': 'alif' })
+			.expect('Content-Type', /text/)
+			.expect(401).then(response => {
+				expect(response.text).toEqual("Invalid password");
+			});
+	})
+	
+		
+	it('update visitor, wrong username', async () => {
+		return request
+			.patch('/update/visitor')
+			.send({'username': 'slow', 'password': '6783','name': 'alif' })
+			.expect('Content-Type', /text/)
+			.expect(404).then(response => {
+				expect(response.text).toEqual("Invalid username");
 			});
 	})
 	
@@ -257,11 +258,32 @@ describe('Express Route Test', function () {
 			.set('Authorization', `Bearer ${adminaccessToken}`)
 			.send({'username': 'abu1', 'password': '6783'})
 			.expect('Content-Type', /text/)
-			.expect(404).then(response => {
+			.expect(401).then(response => {
 				expect(response.text).toEqual("Invalid password");
 			});
 	})
 
+
+	// it('delete failed, wrong password', async () => {
+	// 	return request
+	// 		.delete('/delete/staff')
+	// 		.send({'username': 'arif', 'password': '4567'})
+	// 		.expect('Content-Type', /text/)
+	// 		.expect(401).then(response => {
+	// 			expect(response.text).toEqual("Invalid password");
+	// 		});
+	// })
+	
+	// it('delete failed, wrong username', async () => {
+	// 	return request
+	// 		.delete('/delete/staff')
+	// 		.send({'username': 'chong', 'password': '1234'})
+	// 		.expect('Content-Type', /text/)
+	// 		.expect(404).then(response => {
+	// 			expect(response.text).toEqual("Invalid username");
+	// 		});
+	// })
+	
 
 	it('delete staff successfully', async () => {
 		return request
@@ -271,9 +293,7 @@ describe('Express Route Test', function () {
 			.expect(200).then(response => {
 				expect(response.text).toEqual("Delete staff successfully");
 			});
-			// .expect(404).then(response => {
-			// 	expect(response.text).toEqual("Invalid username");
-			// });
+		
 	})
 	
 	it('delete successfully', async () => {

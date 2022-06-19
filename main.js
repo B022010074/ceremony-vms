@@ -62,7 +62,11 @@ app.get('/', (req, res) => {
  *           type: string
  *         username: 
  *           type: string
- *         phone: 
+ *         name: 
+ *           type: string
+ *         role:
+ *           type: string
+ *         token:
  *           type: string
  */
 
@@ -89,9 +93,10 @@ app.get('/', (req, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
- *       401:
+ *       404:
  *         description: Invalid username or password
  */
+
 
 //user or admin login
 app.post('/login', async (req, res) => {
@@ -123,6 +128,48 @@ app.post('/login', async (req, res) => {
 	});
 })
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Staff:
+ *       type: object
+ *       properties:
+ *         _id: 
+ *           type: string
+ *         username: 
+ *           type: string
+ *         phone: 
+ *           type: string
+ */
+
+/**
+ * @swagger
+ * /login/staff:
+ *   post:
+ *     description: Staff Login
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: 
+ *             type: object
+ *             properties:
+ *               staffusername: 
+ *                 type: string
+ *               staffpassword: 
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Staff Successful login
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Staff'
+ *       404:
+ *         description: Invalid username or password
+ */
+
 // staff login
 app.post('/login/staff', async (req, res) => {
 	console.log(req.body);
@@ -152,6 +199,36 @@ app.post('/login/staff', async (req, res) => {
 	});
 })
 
+
+
+
+/**
+ * @swagger
+ * /register/staff:
+ *   post:
+ *     description: Register staff
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: 
+ *             type: object
+ *             properties:
+ *               staffusername: 
+ *                 type: string
+ *               staffpassword: 
+ *                 type: string
+ *               position:
+ *                 type: string
+ *               staffphonenumber:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: staff successfully saved.
+ *       404:
+ *         description: staff duplicate!
+ */
+
 // user or admin register staff
 app.post('/register/staff', async (req, res) => {
 	console.log(req.body);
@@ -162,6 +239,58 @@ app.post('/register/staff', async (req, res) => {
 
 	return res.status(200).send("staff successfully saved.")
 })
+
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+
+/**
+ * @swagger
+ * security:
+ *   - bearerAuth: []
+ */
+
+/**
+ * @swagger
+ * /register:
+ *   post:
+ *     security:
+ *       - bearerAuth: []
+ *     description: Register visitor or User
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: 
+ *             type: object
+ *             properties:
+ *               username: 
+ *                 type: string
+ *               password: 
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *               matric_id:
+ *                 type: string
+ *               phonenumber:
+ *                 type: string
+ *               
+ *     responses:
+ *       200:
+ *         description: user successfully saved.
+ *       404:
+ *         description: user duplicate!
+ *       403:
+ *         description: Unauthorized
+ */
 
 // user or admin register
 app.post('/register', verifyToken, async (req, res) => {
@@ -176,10 +305,60 @@ app.post('/register', verifyToken, async (req, res) => {
 		return res.status(200).send("user successfully saved.")
 	}
 	else{
-		res.status(404).send("Unauthorized")
+		res.status(403).send("Unauthorized")
 	}
 
 })
+
+
+
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Visitor:
+ *       type: object
+ *       properties:
+ *         username:
+ *           type: string
+ *         name:
+ *           type: string
+ *         role: 
+ *           type: string
+ *       
+ *          
+ */
+
+/**
+ * @swagger
+ * /find/visitor:
+ *   post:
+ *     security:
+ *       - bearerAuth: []
+ *     description: Find visitor name
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: 
+ *             type: object
+ *             properties:
+ *               name:
+ *             typr: string
+ *     responses:
+ *       200:
+ *         description: visitor exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Visitor'
+ *       404:
+ *         description: Visitor not exist
+ */
+
+
+
 
 
 // visitor find name
@@ -198,16 +377,41 @@ app.get('/find/visitor/:name', verifyToken, async(req,res)=>{
 	})
 	}
 	else{
-		res.status(404).send("Unauthorized")
+		res.status(403).send("Unauthorized")
 		}
   })
 
-// Middleware Express for JWT
-//app.use(verifyToken);
 
 
 
 
+/**
+ * @swagger
+ * /update/visitor:
+ *   patch:
+ *     description: Update visitor's phone number
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: 
+ *             type: object
+ *             properties:
+ *               username: 
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               phonenumber:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Update successfully
+ * 
+ *       404:
+ *         description: Invalid username
+ *       401:
+ *         description: Invalid password
+ */
 
   // visitor update phone no
   app.patch('/update/visitor',async (req,res) =>{
@@ -219,7 +423,7 @@ app.get('/find/visitor/:name', verifyToken, async(req,res)=>{
 	}
 
 	else if (visit == 'Invalid password'){
-		return res.status(404).send("Invalid password")
+		return res.status(401).send("Invalid password")
 	}
 
 	return res.status(200).send("Update successfully")
@@ -227,7 +431,40 @@ app.get('/find/visitor/:name', verifyToken, async(req,res)=>{
  })
 
 
-  // user or admin update
+ /**
+ * @swagger
+ * /update/user:
+ *   patch:
+ *     security:
+ *       - bearerAuth: []
+ *     description: Update user name
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: 
+ *             type: object
+ *             properties:
+ *               username: 
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Update successfully
+ * 
+ *       404:
+ *         description: Invalid username
+ *       403:
+ *         description: Unauthorized
+ */
+  
+
+
+
+ // user or admin update
   app.patch('/update/user', verifyToken,async (req,res) =>{
 	if(req.user.role == "admin"){
 	console.log(req.body);
@@ -238,16 +475,11 @@ app.get('/find/visitor/:name', verifyToken, async(req,res)=>{
 	}
 
 	else if (user == 'Invalid password'){
-		return res.status(404).send("Invalid password")
+		return res.status(401).send("Invalid password")
 	}
 
 	return res.status(200).send("Update successfully")
 	
-	//res.status(200).json({
-	//	_id: user._id,
-	//	name: user.username,
-	//	phonenumber: user.phone,
-	//})
 	}
 	else{
 		res.status(404).send("Unauthorized")
@@ -255,13 +487,43 @@ app.get('/find/visitor/:name', verifyToken, async(req,res)=>{
 
 })
 
-// user or admin delete
+ /**
+ * @swagger
+ * /delete/user:
+ *   delete:
+ *     security:
+ *       - bearerAuth: []
+ *     description: Delete data 
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: 
+ *             type: object
+ *             properties:
+ *               username: 
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Delete successfully
+ * 
+ *       404:
+ *         description: Invalid username
+ *       401:
+ *         description: Invalid password
+ *       403:
+ *         description: Unauthorized
+ */
+
+ // user or admin delete
 app.delete('/delete/user',verifyToken, async (req, res) => {
 	console.log(req.body);
 	if(req.user.role == "admin"){
 	const user = await User.delete(req.body.username,req.body.password);
 	if (user == "invalid password"){
-		return res.status(404).send("Invalid password")		
+		return res.status(401).send("Invalid password")		
 	}
 	else if(user == "Wrong username"){
 		return res.status(404).send("Invalid username")
@@ -273,6 +535,34 @@ app.delete('/delete/user',verifyToken, async (req, res) => {
 	}
 })
 	
+
+
+/**
+ * @swagger
+ * /delete/staff:
+ *   delete:
+ *     description: Delete staff
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: 
+ *             type: object
+ *             properties:
+ *               username: 
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Delete staff successfully
+ * 
+ *       404:
+ *         description: Invalid username or password
+ *       401:
+ *         description: Invalid password
+ */
+
 // staff delete
 app.delete('/delete/staff', async (req, res) => {
 	console.log(req.body);
