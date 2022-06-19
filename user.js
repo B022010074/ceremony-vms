@@ -52,7 +52,7 @@ class User {
 			  }) 	
 		   }
 		
-		   static async s_register(staffusername, staffpassword, position, staffphonenumber) {
+		   static async s_register(staffusername, staffpassword, position, role,staffphonenumber) {
 			// TODO: Check if username exists
 			return staff.findOne({
 	
@@ -76,6 +76,7 @@ class User {
 				   'staffusername' : staffusername,
 				   'staffpassword' : staffpassword,
 				   'position': position,
+				   'role': role,
 				   'staffphonenumber': staffphonenumber,
 				   
 				   })

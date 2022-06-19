@@ -220,6 +220,8 @@ app.post('/login/staff', async (req, res) => {
  *                 type: string
  *               position:
  *                 type: string
+ *               role:
+ *                 type: string
  *               staffphonenumber:
  *                 type: string
  *     responses:
